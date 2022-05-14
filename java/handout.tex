@@ -1,0 +1,190 @@
+%!TEX root = handout.tex
+\documentclass[parskip=half*]{scrartcl}
+\setkomafont{section}{\LARGE}
+\usepackage{geometry}
+\geometry{a4paper, top=2.5cm, left=2cm, right=2cm, bottom=2.5cm}
+\pagestyle{empty}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage[autostyle=true, german=quotes]{csquotes}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{todonotes}
+\usepackage{mdframed}
+\usepackage{changepage}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}} % linksbündig mit Breitenangabe
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}} % zentriert mit Breitenangabe
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}} % rechtsbündig mit Breitenangabe
+
+%% Code
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{dkred}{rgb}{0.6,0,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\begin{document}
+
+\section*{Programmierschnittstellen im Web}
+
+\vspace{0.3cm}
+
+Webseiten bieten Programmierern oft Schnittstellen, sogenannte \emph{API}s. An diese Schnittstellen können Programme Anfragen stellen. Dabei gibt es zwei wichtige Arten:
+\begin{itemize}
+  \item \textbf{\emph{POST}-Anfragen}, um dem Server Informationen zum Verarbeiten zu \textbf{senden}.
+  \item \textbf{\emph{GET}-Anfragen}, um Informationen vom Server \textbf{abzufragen}
+\end{itemize}
+
+\subsection*{POST-Anfragen}
+
+\emph{POST}-Anfragen benötigen Daten, die an das Netzwerk geschickt werden müssen. Als Hilfestellung steht die Klasse \lstinline{NetzwerkZugriff} zur Verfügung.
+\begin{figure}[htb]
+    \centering
+    \begin{tabular}{|l|}
+    \hline
+    \multicolumn{1}{|c|}{\bfseries Netzwerkzugriff} \\ \hline
+                    \\ \hline
+    NetzwerkZugriff(String domain)                \\
+    GETAnfrageSenden(String url) : String \\
+    POSTAnfrageVorbereiten(String parameterName, String parameterWert): void \\ 
+    POSTAnfrageSenden(String url) : void \\ \hline
+    \end{tabular}
+    \label{fig:klasse_netzwerkzugriff}
+\end{figure}
+
+Du kannst durch die Methode \lstinline{POSTAnfrageVorbereiten} Werte für die nächste Anfrage setzen und mit \lstinline{POSTAnfrageSenden} abgeschicken. Z.B:
+
+\begin{lstlisting}
+NetzwerkZugriff socialbotnet = new NetzwerkZugriff("https://www.socialbotnet.de");
+
+// Login Daten setzen
+socialbotnet.POSTAnfrageVorbereiten("username", "MeinBot");
+socialbotnet.POSTAnfrageVorbereiten("password", "secure");
+
+// Nachricht setzen
+socialbotnet.POSTAnfrageVorbereiten("message", "Hallo Welt!");
+
+// POST-Anfrage abschicken
+socialbotnet.POSTAnfrageSenden("/api/post");
+\end{lstlisting}
+
+\subsection*{GET-Anfragen}
+GET-Anfragen können mit Objekten der Klasse \lstinline{NetzwerkZugriff} durch die Methode \lstinline{GETAnfrageSenden} gesendet werden. Z.B.
+\begin{lstlisting}
+NetzwerkZugriff socialbotnet = new NetzwerkZugriff("https://www.socialbotnet.de");
+
+// Alle User abfragen
+String antwort = socialbotnet.GETAnfrageSenden("/api/users");
+\end{lstlisting}
+\vspace{0.25cm}
+
+Auch bei GET-Anfragen können Parameter benutzt werden. Diese werden jedoch einfach in der URL angehängt:
+\begin{lstlisting}
+// Posts abfragen, mit den Parametern "sortby=likes" und "limit=1"
+String antwort = socialbotnet.GETAnfrageSenden("/api/posts?sortby=likes&limit=1");
+\end{lstlisting}
+\newpage
+\section*{Übersicht der Schnittstellen}
+\bgroup
+\def\arraystretch{1.5}%  1 is the default, change whatever you need
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|L{7cm}|C{1.2cm}|L{7cm}|}\hline
+\emph{/api/users} & \emph{GET} & Liefert eine Übersicht über alle registrierten Nutzer\\\hline
+
+\emph{/api/posts} & \emph{GET} & Liefert die letzten 50 Posts des gesamten Netzwerks\\ \cline{3-3}
+Optionale Parameter: sortby, limit & & \emph{sortby=likes} nach Likes sortiert, \emph{sortby=time} nach Datum sortiert. Limit beschränkt die Anzahl, z.B. limit=1 für nur einen Post\\ \hline
+
+\emph{/api/pinnwand/}\texttt{<username>} & \emph{GET} & Liefert die Posts an der Pinnwand des genannten Nutzers\\\cline{3-3}
+Optionale Parameter: sortby, limit & & sortby=likes, sortby=time, limit=zahl wie oben\\ \hline\hline
+
+\emph{/api/user/update} & \emph{POST} & Updaten der Profilinformationen wie Nutzername, \enquote{Hobbies} und \enquote{Über mich}.\\\cline{3-3}
+Parameter: username, password
+
+Optionale Parameter: newUsername, hobbies, about & & \emph{newUsername} Benutzernamen ändern, \emph{hobbies} und \emph{about} setzen den \enquote{Hobbies} und \enquote{Über mich} Text.\\ \hline
+
+\emph{/api/post} & \emph{POST} & Posten eines Beitrags auf der eigenen Pinnwand und der allgemeinen Chronik.\\
+Parameter: username, password, message & & \\ \hline
+
+\emph{/api/post/}\textbf{\texttt{<username>}} & \emph{POST} & Posten an die Pinnwand eines bestimmten Nutzers. \\
+Parameter: username, password, message & &\\\hline
+
+\emph{/api/like} & \emph{POST} & Ermöglicht automatisiertes Liken eines Posts.\\
+Parameter: username, password, postid & & \\\hline
+\emph{/api/unlike} & \emph{POST} & Macht like rückgängig.\\ 
+Parameter: username, password, postid & & \\\hline
+
+\end{tabular}	
+\end{center}
+\end{table}
+\egroup
+\end{document}
+
+% {\Large \textbf{JSON-Format}}
+
+% JSON ist ein Übertragungsformat für Daten, die sich leicht mit dem PC verarbeiten lassen sollen. Dabei gibt es Objekte mit Key-Value Paaren und Arrays von Objekten.
+
+% \begin{minipage}[t]{0.45\linewidth}
+% \textbf{Objekte:}
+
+% \begin{lstlisting}[frame=single]
+% {
+%   "key": "value",
+%   "key2": 42,
+%   "key3": true,
+%   ...
+% }
+% \end{lstlisting}
+% \end{minipage}
+% \hspace{0.1\linewidth}
+% \begin{minipage}[t]{0.45\linewidth}
+% \textbf{Arrays:}
+
+% \begin{lstlisting}[frame=single]
+% [
+%   {
+%     "key": "objekt1",
+%   },
+%   {
+%     "key": "objekt2"
+%   },
+%   ...
+% ]
+% \end{lstlisting}
+% \end{minipage}
+% Als Values in den Objekten sind zugelassen: Zahlen, Booleanwerte, Strings, oder ein weiteres Objekt oder sogar ein Array. Somit lassen sich die Objekte auch schachteln.
+
+% JSON lässt sich in Java mit folgenden Methoden verarbeiten:
+% \begin{itemize}
+% 	\item Relevante Methoden von JSONArray: getJSONObject(int index)
+% 	\item Relevante Methoden von JSONObject: getInt(String key), getBoolean(String key), getString(String key), getJSONObject(String key), getJSONArray(String key)
+% \end{itemize}
+
+% Beispiel:
+% \begin{figure}[htb]
+% \centering
+% \includegraphics[width=\linewidth]{bilder/json.png}
+% \end{figure}

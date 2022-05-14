@@ -1,0 +1,170 @@
+%!TEX root = jsonHandout.tex
+\documentclass[parskip=half*]{scrartcl}
+\setkomafont{section}{\LARGE}
+\usepackage{geometry}
+\geometry{a4paper, top=2.5cm, left=2cm, right=2cm, bottom=2.5cm}
+\pagestyle{empty}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage[autostyle=true, german=quotes]{csquotes}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{todonotes}
+\usepackage{mdframed}
+\usepackage{changepage}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}} % linksbündig mit Breitenangabe
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}} % zentriert mit Breitenangabe
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}} % rechtsbündig mit Breitenangabe
+
+%% Code
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{dkred}{rgb}{0.6,0,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\begin{document}
+
+\section*{JSON-Format}
+
+JSON ist ein Übertragungsformat für Daten, die sich leicht mit dem PC verarbeiten lassen sollen. Dabei gibt es Objekte mit Key-Value Paaren und Arrays von Objekten.
+
+\begin{minipage}[t]{0.45\linewidth}
+\textbf{Objekte:}
+
+\begin{lstlisting}[frame=single]
+{
+  "key": "value",
+  "key2": 42,
+  "key3": true,
+  ...
+}
+\end{lstlisting}
+\end{minipage}
+\hspace{0.1\linewidth}
+\begin{minipage}[t]{0.45\linewidth}
+\textbf{Arrays:}
+
+\begin{lstlisting}[frame=single]
+[
+  {
+    "key": "objekt1",
+  },
+  {
+    "key": "objekt2"
+  },
+  ...
+]
+\end{lstlisting}
+\end{minipage}
+Als Values in den Objekten sind zugelassen: Zahlen, Booleanwerte, Strings, oder ein weiteres Objekt oder sogar ein Array. Somit lassen sich die Objekte auch schachteln.
+
+JSON lässt sich in Java mit folgenden Methoden verarbeiten:
+\begin{itemize}
+  \item Relevante Methoden von JSONArray: \lstinline{getJSONObject(int index)}
+  \item Relevante Methoden von JSONObject: \lstinline{getInt(String key)}, \lstinline{getBoolean(String key)}, \\\lstinline{getString(String key)}, \lstinline{getJSONObject(String key)}, \lstinline{getJSONArray(String key)}
+\end{itemize}
+
+Beispiel:
+
+\begin{lstlisting}
+// Erstellt aus dem String ein JSONArray
+JSONArray array = new JSONArray("[{ \"id\": 1 }]");
+
+// Mit getJSONObject(int index) kann man auf die Objekte im Array zugreifen
+JSONObject obj = array.getJSONObject(0);
+
+// Mit getInt(String key) kann man fuer einen Key den Value auslesen
+int zahl = obj.getInt("id");
+\end{lstlisting}
+
+Beispiel im SocialBotNet
+\begin{lstlisting}
+public void eigenePinnwandLiken() {
+    // Alle Nachrichten auf der Pinnwand von MeinBot abrufen
+    String antwort = socialbotnet.GETAnfrageSenden("/api/pinnwand/MeinBot");
+    // Die Antwort ist ein JSONArray der Nachrichten
+    JSONArray nachrichten = new JSONArray(antwort);
+    // Iteriere ueber die einzelnen Nachrichten
+    for(int i=0; i<nachrichten.length(); i++) {
+        JSONObject nachricht = nachrichten.getJSONObject(i);
+        // Hole die Nachrichten ID aus dem JSONObject
+        int postid = nachricht.getInt("id");
+        // Diese ID wird als Eingabewert zum Liken benoetigt
+        liken(postid);
+    }
+}
+
+public void liken(int postid) {
+  // ... POST-Anfrage auf /api/like mit gesetzter postid
+}
+\end{lstlisting}
+
+\newpage
+\section*{Beispielrückgaben des SocialBotNet}
+
+Ein \emph{GET}-Request auf \lstinline{/api/users} liefert folgendes Ergebnis:
+\begin{lstlisting}
+
+[
+  {
+    "id":1,
+    "username":"root",
+    "hobbies":"Filme schauen, Fussball spielen",
+    "about":"I am root."
+  },
+  {
+    "id":2,
+    "username":"Welcome",
+    "hobbies":"",
+    "about":""
+  },
+  ...
+]
+\end{lstlisting}
+
+
+Ein \emph{GET}-Request auf \lstinline{/api/users} oder \lstinline{/api/pinnwand/...} liefert folgendes Ergebnis:
+\begin{lstlisting}
+[
+  {
+    "id":2,
+    "message":"Herzlich Willkommen, root!",
+    "user":{"id":2,"username":"Welcome", "hobbies": "...", "about": "..."},
+    "wall":{"id":1,"username":"root", "hobbies": "...", "about": "..."},
+    "publishingDate":"Oct 25, 2014 10:09:55 AM",
+    "likedBy":[
+      {"id":1,"username":"root", "hobbies": "...", "about": "..."},
+      {"id":10,"username":"Hello", "hobbies": "...", "about": "..."}
+    ]
+  },
+  ...
+]
+\end{lstlisting}
+
+\end{document}
+
+

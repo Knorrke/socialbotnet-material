@@ -1,0 +1,172 @@
+%!TEX root = objekteHandout.tex
+\documentclass[parskip=half*]{scrartcl}
+\setkomafont{section}{\LARGE}
+\usepackage{geometry}
+\geometry{a4paper, top=2.5cm, left=2cm, right=2cm, bottom=2.5cm}
+\pagestyle{empty}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage[autostyle=true, german=quotes]{csquotes}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{todonotes}
+\usepackage{mdframed}
+\usepackage{changepage}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}} % linksbündig mit Breitenangabe
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}} % zentriert mit Breitenangabe
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}} % rechtsbündig mit Breitenangabe
+
+%% Code
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{dkred}{rgb}{0.6,0,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\begin{document}
+
+\section*{Parsen der Antworten des SocialBotNet}
+In dem Projekt steht dir eine Klasse \lstinline{AntwortParser} zur Verfügung.
+\begin{figure}[htb]
+    \centering
+    \begin{tabular}[t]{|l|}
+    \hline
+    \multicolumn{1}{|c|}{\bfseries AntwortParser} \\ \hline
+                    \\ \hline
+    zuUserArray(String serverAntwort) : User[ ] \\
+    zuPostArray(String serverAntwort) : Post[ ] \\ \hline
+    \end{tabular} \\ \vspace{0.1cm}
+    \label{fig:klasse_AntwortParser}
+\end{figure}
+
+Diese kann die Antworten des SocialBotNet zu richtigen Objekten umwandeln:
+\begin{itemize}
+\item \lstinline{zuUserArray} wandelt die Antwort (z.B. von \emph{/api/users}) in ein Array von User Objekten.
+\item \lstinline{zuPostArray} wandelt die Antwort (z.B. von \emph{/api/posts}) in ein Array von Post Objekten.
+\end{itemize}
+
+\begin{figure}[htb]
+    \centering
+    \begin{tabular}[t]{|l|}
+    \hline
+    \multicolumn{1}{|c|}{\bfseries User} \\ \hline
+     - id : int  \\
+     - username : string  \\
+     - hobbies : string  \\
+     - about : string  \\  \\ \\ \hline
+     id : int  \\
+     username : string  \\
+     hobbies : string  \\
+     about : string  \\  \\ \\ \hline
+    \end{tabular}
+    \hspace{0.8cm}
+    \begin{tabular}[t]{|l|}
+    \hline
+    \multicolumn{1}{|c|}{\bfseries Post} \\ \hline
+     - id : int  \\
+     - message : string \\
+     - user : User  \\
+     - wall : User  \\
+     - publishingDate : string  \\
+     - likedBy : List[User]  \\ \hline
+     id : int  \\
+     message : string  \\
+     user : User  \\
+     userId: int \\
+     username: string \\
+     wall : User  \\
+     publishingDate : string  \\
+     likedBy : List[User] \\ \hline
+    \end{tabular}
+    \label{fig:klasse_User_Post}
+\end{figure}
+
+Beispiel:
+\begin{lstlisting}
+def eigenePinnwandLiken():
+    // Alle Nachrichten auf der Pinnwand von MeinBot abrufen
+    antwort = socialbotnet.GETAnfrageSenden("/api/pinnwand/MeinBot")
+    // Die Antwort beschreibt mehrere Posts, verwende also AntwortParser.zuPostArray
+    nachrichten = AntowortParser.zuPostArray(antwort);
+    // Iteriere ueber die einzelnen Nachrichten
+    for nachricht in nachrichten:
+        // Hole die Nachrichten ID aus dem Post Objekt
+        postid = nachricht.id
+        // Diese ID wird als Eingabewert zum Liken benoetigt
+        liken(postid)
+
+def liken(postid):
+    // Like schicken
+    socialbotnet.POSTAnfrageSenden("/api/like", username=username, password=password, postid=postid)
+\end{lstlisting}
+
+\newpage
+\section*{Beispielrückgaben des SocialBotNet}
+
+Ein \emph{GET}-Request auf \lstinline{/api/users} liefert folgendes Ergebnis, das mit \lstinline{AntwortParser.zuUserArray} verarbeitet werden kann:
+\begin{lstlisting}
+
+[
+  {
+    "id":1,
+    "username":"root",
+    "hobbies":"Filme schauen, Fussball spielen",
+    "about":"I am root."
+  },
+  {
+    "id":2,
+    "username":"Welcome",
+    "hobbies":"",
+    "about":""
+  },
+  ...
+]
+\end{lstlisting}
+
+
+Ein \emph{GET}-Request auf \lstinline{/api/posts} oder \lstinline{/api/pinnwand/...} liefert folgendes Ergebnis, das mit \\\lstinline{AntwortParser.zuPostArray} verarbeitet werden kann:
+\begin{lstlisting}
+[
+  {
+    "id":2,
+    "message":"Herzlich Willkommen, root!",
+    "user":{"id":2,"username":"Welcome", "hobbies": "...", "about": "..."},
+    "wall":{"id":1,"username":"root", "hobbies": "...", "about": "..."},
+    "publishingDate":"Oct 25, 2014 10:09:55 AM",
+    "likedBy":[
+      {"id":1,"username":"root", "hobbies": "...", "about": "..."},
+      {"id":10,"username":"Hello", "hobbies": "...", "about": "..."}
+    ]
+  },
+  ...
+]
+\end{lstlisting}
+
+\subsection*{Aufgabe} Zeichne ein Objektdiagramm für die GET-Anfrage \emph{/api/posts?limit=1}.
+
+\end{document}
+
+
