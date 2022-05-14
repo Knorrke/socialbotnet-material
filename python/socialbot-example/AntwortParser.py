@@ -35,9 +35,11 @@ class AntwortParser:
 		for obj in array:
 			pid = obj["id"]
 			message = obj["message"]
+			publishingDate = obj["publishingDate"]
 			user = self._zuUser(obj["user"])
 			wall = self._zuUser(obj["wall"])
-			publishingDate = obj["publishingDate"]
+			trendingScore = obj["trendingScore"]
+			likes = obj["likes"]
 			likedBy = self._jsonZuUserArray(obj["likedBy"])
-			posts.append(Post(pid, message, user, wall, publishingDate, likedBy))
+			posts.append(Post(pid, message, publishingDate, user, wall, trendingScore, likes, likedBy))
 		return posts

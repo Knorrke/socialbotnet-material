@@ -54,10 +54,12 @@ public class AntwortParser
     private static Post zuPost(JSONObject obj) {
         int id = obj.getInt("id");
         String message = obj.getString("message");
+        Timestamp publishingDate = Timestamp.valueOf(obj.getString("publishingDate"));
         User user = zuUser(obj.getJSONObject("user"));
         User wall = zuUser(obj.getJSONObject("wall"));
-        Timestamp publishingDate = Timestamp.valueOf(obj.getString("publishingDate"));
+        double trendingScore = obj.getDouble("trendingScore");
+        int likes = obj.getInt("likes");
         User[] likedBy = zuUserArray(obj.getJSONArray("likedBy"));
-        return new Post(id, message, user, wall, publishingDate, likedBy);
+        return new Post(id, message, publishingDate, user, wall, trendingScore, likes, likedBy);
     }
 }

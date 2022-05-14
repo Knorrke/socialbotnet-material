@@ -5,13 +5,15 @@ from User import *
 
 
 class Post:
-    def __init__(self, id: int, message: str, user: User, wall: User, publishingDate: str, likedBy: List[User]):
+    def __init__(self, id: int, message: str, publishingDate: str, user: User, wall: User, trendingScore: float, likes: int, likedBy: List[User]):
         """ erzeugt ein Post-Objekt, das über Methoden die Informationen zurückgibt """
         self._id = id
         self._message = message
+        self._publishingDate = publishingDate
         self._user = user
         self._wall = wall
-        self._publishingDate = publishingDate
+        self._trendingScore = trendingScore
+        self._likes = likes
         self._likedBy = likedBy
 
     @property
@@ -21,6 +23,10 @@ class Post:
     @property
     def message(self) -> str:
         return self._message
+
+    @property
+    def publishingDate(self) -> str:
+        return self._publishingDate
 
     @property
     def user(self) -> User:
@@ -39,8 +45,12 @@ class Post:
         return self._wall
 
     @property
-    def publishingDate(self) -> str:
-        return self._publishingDate
+    def trendingScore(self) -> float:
+        return self._trendingScore
+
+    @property
+    def likes(self) -> int:
+        return self._likes
 
     @property
     def likedBy(self) -> List[User]:

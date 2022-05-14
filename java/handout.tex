@@ -113,18 +113,23 @@ String antwort = socialbotnet.GETAnfrageSenden("/api/posts?sortby=likes&limit=1"
 \begin{table}[ht]
 \begin{center}
 \begin{tabular}{|L{7cm}|C{1.2cm}|L{7cm}|}\hline
-\emph{/api/users} & \emph{GET} & Liefert eine Übersicht über alle registrierten Nutzer\\\hline
-
-\emph{/api/posts} & \emph{GET} & Liefert die letzten 50 Posts des gesamten Netzwerks\\ \cline{3-3}
-Optionale Parameter: sortby, limit & & \emph{sortby=likes} nach Likes sortiert, \emph{sortby=time} nach Datum sortiert. Limit beschränkt die Anzahl, z.B. limit=1 für nur einen Post\\ \hline
+\emph{/api/posts} & \emph{GET} & Liefert die letzten 50 Posts des gesamten Netzwerks.\\ \cline{3-3}
+Optionale Parameter: sortby, order, limit & & \emph{sortby=}<attribut> Sortiert nach einem Attribut (z.B. likes). \\ && \emph{order=asc} bzw. \emph{order=desc} Sortiert aufsteigend bzw. absteigend. \\&& \emph{limit=}<zahl> Beschränkt die Anzahl der Objekte.\\ \hline
 
 \emph{/api/pinnwand/}\texttt{<username>} & \emph{GET} & Liefert die Posts an der Pinnwand des genannten Nutzers\\\cline{3-3}
-Optionale Parameter: sortby, limit & & sortby=likes, sortby=time, limit=zahl wie oben\\ \hline\hline
+Optionale Parameter: sortby, order, limit & & Parameter wie oben \\ \hline
+
+\emph{/api/users} & \emph{GET} & Liefert eine Übersicht über alle registrierten Nutzer\\ \cline{3-3}
+Optionale Parameter: sortby, order, limit & & Parameter wie oben \\ \hline\hline
 
 \emph{/api/user/update} & \emph{POST} & Updaten der Profilinformationen wie Nutzername, \enquote{Hobbies} und \enquote{Über mich}.\\\cline{3-3}
-Parameter: username, password
+Parameter: username, password 
 
-Optionale Parameter: newUsername, hobbies, about & & \emph{newUsername} Benutzernamen ändern, \emph{hobbies} und \emph{about} setzen den \enquote{Hobbies} und \enquote{Über mich} Text.\\ \hline
+Optionale Parameter: newUsername, hobbies, about & & \emph{newUsername} Benutzernamen ändern
+
+\emph{hobbies} \enquote{Hobbies}-Text ändern 
+
+\emph{about} \enquote{Über mich}-Text ändern\\ \hline
 
 \emph{/api/post} & \emph{POST} & Posten eines Beitrags auf der eigenen Pinnwand und der allgemeinen Chronik.\\
 Parameter: username, password, message & & \\ \hline

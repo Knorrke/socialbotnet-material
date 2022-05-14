@@ -3,17 +3,21 @@ import java.sql.Timestamp;
 public class Post {
     private int id;
     private String message = "";
+    private Timestamp publishingDate;
     private User user;
     private User wall;
-    private Timestamp publishingDate;
+    private double trendingScore;
+    private int likes;
     private User[] likedBy = new User[0];
 
-    public Post(int id, String message, User user, User wall, Timestamp publishingDate, User[] likedBy) {
+    public Post(int id, String message, Timestamp publishingDate, User user, User wall, double trendingScore, int likes, User[] likedBy) {
         this.id = id;
         this.message = message;
+        this.publishingDate = publishingDate;
         this.user = user;
         this.wall = wall;
-        this.publishingDate = publishingDate;
+        this.trendingScore = trendingScore;
+        this.likes = likes;
         this.likedBy = likedBy;
     }
 
@@ -25,6 +29,11 @@ public class Post {
     /** @return the message */
     public String getMessage() {
         return message;
+    }
+
+    /** @return the publishingDate */
+    public Timestamp getPublishingDate() {
+        return publishingDate;
     }
 
     /** @return the user */
@@ -45,11 +54,6 @@ public class Post {
     /** @return the wall */
     public User getWall() {
         return wall;
-    }
-
-    /** @return the publishingDate */
-    public Timestamp getPublishingDate() {
-        return publishingDate;
     }
 
     /** @return the likedBy */

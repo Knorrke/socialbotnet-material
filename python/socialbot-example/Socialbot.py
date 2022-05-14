@@ -1,7 +1,9 @@
 # /usr/bin/python
 
-from Netzwerkzugriff import *
+import json
 
+from Netzwerkzugriff import *
+from AntwortParser import *
 
 class Socialbot:
     def __init__(self, username, password):
@@ -14,13 +16,16 @@ class Socialbot:
     def posten(self, nachricht):
         self._socialbotnet.POSTAnfrageSenden("/api/post", username=self._username, password=self._password,
                                              message=nachricht)
-        '''
-        Ergänze hier den Code, damit der Bot im Netzwerk posten kann
-        '''
 
     def likePost(self, id):
         self._socialbotnet.POSTAnfrageSenden("/api/like", username=self._username, password=self._password,
                                              postid=str(id))
+    
+    def eigenePinnwandLiken(self):
+        postsJson = self._socialbotnet.GETAnfrageSenden(f'/api/pinnwand/{self._username}')
+        posts = AntwortParser().zuPostArray(postsJson)
+        for post in posts:
+            self.likePost(post.id)
 
     def postPokemonTrivia(self, poke_id):
         pokemon = Netzwerkzugriff(f'https://pokeapi.co/api/v2')
