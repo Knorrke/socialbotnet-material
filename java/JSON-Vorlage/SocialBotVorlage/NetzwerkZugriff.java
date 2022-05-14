@@ -14,6 +14,7 @@ public class NetzwerkZugriff {
     private ArrayList<String> parameter = new ArrayList<String>();
 
     public NetzwerkZugriff(String domainName) {
+        System.setProperty("java.net.useSystemProxies", "true"); // Fix für Schul-Proxies
         domain = domainName;
     }
 

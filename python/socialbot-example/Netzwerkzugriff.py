@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import requests
-
+import urllib.request
 
 class Netzwerkzugriff:
     def __init__(self, domain):
@@ -17,7 +17,7 @@ class Netzwerkzugriff:
         @param **pairs: beliebige Anzahl Parameter (Schlüssel) mit ihrem Wert
         '''
         try:
-            r = requests.post(self._domain + url, data=pairs)
+            r = requests.post(self._domain + url, data=pairs, proxies=urllib.request.getproxies())
             urlParameter = []
             for key, value in pairs.items():
                 urlParameter.append(key + "=" + value)
@@ -42,7 +42,7 @@ class Netzwerkzugriff:
         @param url: Die relative Adresse auf dem Server, an die die Anfrage geschickt werden soll.
         '''
         try:
-            r = requests.get(self._domain + url)
+            r = requests.get(self._domain + url, proxies=urllib.request.getproxies())
             print("Sende 'GET'-Anfrage an URL:", url)
             antwort = self._antwortLesen(r)
             return antwort

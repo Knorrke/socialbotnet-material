@@ -88,15 +88,16 @@ Diese kann die Antworten des SocialBotNet zu richtigen Objekten umwandeln:
     \multicolumn{1}{|c|}{\bfseries Post} \\ \hline
      - id : int  \\
      - message : String \\
+     - publishingDate : Timestamp  \\
      - user : User  \\
      - wall : User  \\
-     - publishingDate : Timestamp  \\
+     - trendingScore: double \\
+     - likes: int \\
      - likedBy : User[ ]  \\ \hline
      getId() : int  \\
      getMessage() : String  \\
-     getUser() : User  \\
-     getWall() : User  \\
      getPublishingDate() : Timestamp  \\
+     ... \\
      getLikedBy() : User[ ] \\ \hline
     \end{tabular}
     \label{fig:klasse_User_Post}
@@ -120,10 +121,9 @@ public void eigenePinnwandLiken() {
 }
 
 public void liken(int postid) {
-    // POST-Anfrage mit Nutzerdaten vorbereiten
+    // POST-Anfrage mit Parametern vorbereiten
     socialbotnet.POSTAnfrageVorbereiten("username", username);
     socialbotnet.POSTAnfrageVorbereiten("password", password);
-    // POST-Anfrage mit postid vorbereiten
     socialbotnet.POSTAnfrageVorbereiten("postid", postid);
     // Like schicken
     socialbotnet.POSTAnfrageSenden("/api/like");
